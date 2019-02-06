@@ -1,3 +1,3 @@
 # DataGathering
 
-Contains code for fetching raw data from exchange like Binance and Bitfinex.
+Contains all code for gathering data from exchanges such as Binance or Bitfinex.

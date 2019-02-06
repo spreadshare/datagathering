@@ -1,0 +1,19 @@
+image: python:3.6:latest
+
+stages:
+  - codestyle
+
+before_script:
+- 'pip install pipenv'
+- 'pipenv sync'
+- 'cp run.py.example run.py'
+
+codestyle:
+  stage: codestyle
+  tags:
+    - python-3.6
+  script:
+    - 'pipenv run black --check'
+    - "pipenv run checkdoc"
+  only:
+    - tags
