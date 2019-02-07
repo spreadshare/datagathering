@@ -1,0 +1,19 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+black = "==18.9b0"
+pydocstyle = "*"
+docformatter = "*"
+"psycopg2" = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.6"
+
+[scripts]
+checkdoc = "pydocstyle --match '(?!test_|__init__).*\\.py' --add-ignore=D100 --ignore-decorators 'copy_ancestor_docstring'"
+fixdoc = "docformatter . -i -r --wrap-summaries 120"

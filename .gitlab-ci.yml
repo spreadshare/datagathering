@@ -1,19 +1,15 @@
-image: python:3.6:latest
+image: python:3.6
 
 stages:
-  - codestyle
+    - codestyle
 
 before_script:
-- pip install pipenv
-- pipenv sync
-- cp run.py.example run.py
+    - pip install pipenv
+    - pipenv lock
+    - pipenv sync
 
 codestyle:
-  stage: codestyle
-  tags:
-    - python-3.6
-  script:
-    - pipenv run black --check
-    - pipenv run checkdoc
-  only:
-    - tags
+    stage: codestyle
+    script:
+        - pipenv run black --check
+        - pipenv run checkdoc
