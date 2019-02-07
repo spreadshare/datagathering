@@ -4,25 +4,30 @@ import os
 import re
 import logging
 from datetime import datetime
-from decimal import Decimal
 from os import listdir
 from os.path import isfile, join
 from time import sleep
 from urllib.parse import urlparse
+import platform
 
 PATH = "./input-data"
 EXTENSION = ".csv"
 
 
 class DataPump:
+    """Contains all methods for uploading data to a PostgreSQL database."""
+
     def __init__(self):
+        """Set up logger and initiate upload."""
         self.__logger = self.init_logging()
 
         files = self.get_csv_files(PATH, EXTENSION)
 
         # Check if there are any files
         if len(files) == 0:
-            self.__logger.warning(f"No data found. Please place your csv files in {PATH}. Exiting now")
+            self.__logger.warning(
+                f"No data found. Please place your csv files in {PATH}. Exiting now"
+            )
             exit(0)
 
         self.__logger.info("Pushing data of the following csv files:")
@@ -35,6 +40,11 @@ class DataPump:
                 self.insert_data(jobs, file)
 
     def init_logging(self):
+        """
+        Get a configured logger.
+
+        :return: configured logger
+        """
         logging.basicConfig()
         logger = logging.getLogger(self.__class__.__name__)
         logger.setLevel(logging.INFO)
@@ -43,7 +53,7 @@ class DataPump:
         if not len(logger.handlers):
             ch = logging.StreamHandler()
             ch.setLevel(logging.INFO)
-            formatter = logging.Formatter('%(message)s')
+            formatter = logging.Formatter("%(message)s")
             ch.setFormatter(formatter)
             logger.addHandler(ch)
 
@@ -51,9 +61,28 @@ class DataPump:
 
     @staticmethod
     def get_csv_files(path, extension):
-        return [f[:-len(".csv")] for f in listdir(path) if (isfile(join(path, f)) and f.endswith(extension))]
+        """
+        Retrieve a list of files from given path with given extension.
+
+        :param path: Path to search for csv files
+        :param extension: Extension of the files to search
+        :return: List of files
+        """
+        return [
+            f[: -len(extension)]
+            for f in listdir(path)
+            if (isfile(join(path, f)) and f.endswith(extension))
+        ]
 
     def fetch_import_jobs(self, path, extension, file):
+        """
+        Validate the current file and calculate the amount of insertion jobs.
+
+        :param path: Path of the file
+        :param extension: Extension of the file
+        :param file: Filename of the file
+        :return: List of insertion jobs
+        """
         job_list = []
 
         with open(join(path, file + extension), "r") as f:
@@ -67,10 +96,14 @@ class DataPump:
             # Skip header
             if has_header:
                 h = next(reader)
-                self.__logger.warning(f"{file}: Expected header: \tTimestamp, Open, Close, High, Low, Volume")
+                self.__logger.warning(
+                    f"{file}: Expected header: \tTimestamp, Open, Close, High, Low, Volume"
+                )
                 self.__logger.warning(f"{file}: Given header:\t\t{','.join(h)}")
             else:
-                self.__logger.warning(f"{file}: Expected header: \tTimestamp, Open, Close, High, Low, Volume")
+                self.__logger.warning(
+                    f"{file}: Expected header: \tTimestamp, Open, Close, High, Low, Volume"
+                )
                 self.__logger.warning(f"{file}: No header given!")
 
             # Fix formatting
@@ -82,8 +115,14 @@ class DataPump:
 
                 # Convert numbers to floats
                 row = [float(x) for x in row]
-                if prev_nr != -1 and prev_nr + 60000 != row[0] and prev_nr - 60000 != row[0]:
-                    self.__logger.critical(f"{file}: Timestamp error at: {row[0]}. Import blocked")
+                if (
+                    prev_nr != -1
+                    and prev_nr + 60000 != row[0]
+                    and prev_nr - 60000 != row[0]
+                ):
+                    self.__logger.critical(
+                        f"{file}: Timestamp error at: {row[0]}. Import blocked"
+                    )
                     return None
                 prev_nr = row[0]
 
@@ -93,6 +132,12 @@ class DataPump:
         return job_list
 
     def insert_data(self, jobs, file):
+        """
+        Insert jobs in to the database.
+
+        :param jobs: Jobs to insert
+        :param file: File given for logging purposes
+        """
         conn = self.get_connection()
         cur = conn.cursor()
 
@@ -115,9 +160,16 @@ class DataPump:
 
         conn.commit()
         conn.close()
-        self.__logger.info(f"{file}: Finished insertion\nElapsed time: {datetime.now() - start}")
+        self.__logger.info(
+            f"{file}: Finished insertion\nElapsed time: {datetime.now() - start}"
+        )
 
     def get_connection(self):
+        """
+        Parse parameters and connect to database.
+
+        :return: Database connection instance
+        """
         # Parse parameters and connect
         try:
             url = urlparse(os.environ["DATABASE_URL"])
@@ -143,31 +195,43 @@ class DataPump:
             except psycopg2.OperationalError as e:
                 retries += 1
                 if retries > max_attempts:
-                    self.__logger.error(f"Maximum attempts ({max_attempts}) reached. Stopping program")
+                    self.__logger.error(
+                        f"Maximum attempts ({max_attempts}) reached. Stopping program"
+                    )
                     exit(1)
                 self.__logger.warning(e)
-                self.__logger.warning("Could not connect to database! Sleeping 5 seconds")
+                self.__logger.warning(
+                    "Could not connect to database! Sleeping 5 seconds"
+                )
                 sleep(5)
 
         return conn
 
 
 def add_coloring_to_emit_windows(fn):
+    """
+    Add coloring to windows terminals.
+
+    :param fn: Function to execute
+    :return: Improved logging instance
+    """
     # add methods we need to the class
     def _out_handle(self):
         import ctypes
+
         return ctypes.windll.kernel32.GetStdHandle(self.STD_OUTPUT_HANDLE)
 
     out_handle = property(_out_handle)
 
     def _set_color(self, code):
         import ctypes
+
         # Constants from the Windows API
         self.STD_OUTPUT_HANDLE = -11
         hdl = ctypes.windll.kernel32.GetStdHandle(self.STD_OUTPUT_HANDLE)
         ctypes.windll.kernel32.SetConsoleTextAttribute(hdl, code)
 
-    setattr(logging.StreamHandler, '_set_color', _set_color)
+    setattr(logging.StreamHandler, "_set_color", _set_color)
 
     def new(*args):
         FOREGROUND_BLUE = 0x0001  # text color contains blue.
@@ -202,15 +266,20 @@ def add_coloring_to_emit_windows(fn):
         BACKGROUND_INTENSITY = 0x0080  # background color is intensified.
 
         levelno = args[1].levelno
-        if (levelno >= 50):
-            color = BACKGROUND_YELLOW | FOREGROUND_RED | FOREGROUND_INTENSITY | BACKGROUND_INTENSITY
-        elif (levelno >= 40):
+        if levelno >= 50:
+            color = (
+                BACKGROUND_YELLOW
+                | FOREGROUND_RED
+                | FOREGROUND_INTENSITY
+                | BACKGROUND_INTENSITY
+            )
+        elif levelno >= 40:
             color = FOREGROUND_RED | FOREGROUND_INTENSITY
-        elif (levelno >= 30):
+        elif levelno >= 30:
             color = FOREGROUND_YELLOW | FOREGROUND_INTENSITY
-        elif (levelno >= 20):
+        elif levelno >= 20:
             color = FOREGROUND_GREEN
-        elif (levelno >= 10):
+        elif levelno >= 10:
             color = FOREGROUND_MAGENTA
         else:
             color = FOREGROUND_WHITE
@@ -225,33 +294,39 @@ def add_coloring_to_emit_windows(fn):
 
 
 def add_coloring_to_emit_ansi(fn):
+    """
+    Add coloring to unix terminals.
+
+    :param fn: Function to execute
+    :return: Improved logging instance
+    """
     # add methods we need to the class
     def new(*args):
         levelno = args[1].levelno
-        if (levelno >= 50):
-            color = '\x1b[31m'  # red
-        elif (levelno >= 40):
-            color = '\x1b[31m'  # red
-        elif (levelno >= 30):
-            color = '\x1b[33m'  # yellow
-        elif (levelno >= 20):
-            color = '\x1b[32m'  # green
-        elif (levelno >= 10):
-            color = '\x1b[35m'  # pink
+        if levelno >= 50:
+            color = "\x1b[31m"  # red
+        elif levelno >= 40:
+            color = "\x1b[31m"  # red
+        elif levelno >= 30:
+            color = "\x1b[33m"  # yellow
+        elif levelno >= 20:
+            color = "\x1b[32m"  # green
+        elif levelno >= 10:
+            color = "\x1b[35m"  # pink
         else:
-            color = '\x1b[0m'  # normal
-        args[1].msg = color + args[1].msg + '\x1b[0m'  # normal
+            color = "\x1b[0m"  # normal
+        args[1].msg = color + args[1].msg + "\x1b[0m"  # normal
         # print "after"
         return fn(*args)
 
     return new
 
 
-import platform
-
-if platform.system() == 'Windows':
+if platform.system() == "Windows":
     # Windows does not support ANSI escapes and we are using API calls to set the console color
-    logging.StreamHandler.emit = add_coloring_to_emit_windows(logging.StreamHandler.emit)
+    logging.StreamHandler.emit = add_coloring_to_emit_windows(
+        logging.StreamHandler.emit
+    )
 else:
     # all non-Windows platforms are supporting ANSI escapes so we use them
     logging.StreamHandler.emit = add_coloring_to_emit_ansi(logging.StreamHandler.emit)
