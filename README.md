@@ -13,6 +13,8 @@ Contains all code for gathering data from exchanges such as Binance or Bitfinex.
     ```text
     13f0646a4f36 || postgres || "docker-entrypoint.s…" || 23 hours ago || Up About an hour || 0.0.0.0:5432->5432/tcp || runner_db_1
     ```
+    
+    If the database container is **not** running, run `docker-compose up --build` in the `Runner` project.
 
 1. Copy `.env.example` to `.env` and adjust the parameters (DATABASE_URL and INTERVAL).
     ```bash
@@ -24,6 +26,9 @@ Contains all code for gathering data from exchanges such as Binance or Bitfinex.
     DATABASE_URL=postgresql://postgres:password@db/spreadshare
     INTERVAL=300000
     ```
+    
+    The `DATABASE_URL` parameter is the same url as in `runner/.env`. The `INTERVAL` parameter signifies the timespan of
+    a candle.
 
 1. Copy `CSV`files data to `input-data`. This may require `sudo` as docker may claim ownership of the folder.
 
@@ -32,6 +37,11 @@ Contains all code for gathering data from exchanges such as Binance or Bitfinex.
     ```
 
     Data may be retrieved at: https://stack.raoulschipper.com/s/SJbO9HKFVRoWJ3J
+
+1. Run the Datapump using:
+    ```
+    docker-compose up --build
+    ```
 
 ## Problem and error resolution
 #### Docker can't find the network `runner_default`
@@ -55,7 +65,7 @@ further attempt to push the data is made.
 
 #### XXXCandles: Expected header: Timestamp, Open, Close, High, Low, Volume
 A header for the csv files was expected, but not found. This is a warning and the first row, normally a header, is
-actually inserted.
+actually inserted. **However, it may indicate that the order of columns is wrong!**
 
 ### XXXCandles: Timestamp error at: XXX. Import blocked"
 The csv file XXXCandles has no proper timestamps. Ensure that the candle interval (`INTERVAL`) in `.env` is set
