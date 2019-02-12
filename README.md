@@ -65,7 +65,7 @@ further attempt to push the data is made.
 
 #### XXXCandles: Expected header: Timestamp, Open, Close, High, Low, Volume
 A header for the csv files was expected, but not found. This is a warning and the first row, normally a header, is
-actually inserted.
+actually inserted. **However, it may indicate that the order of columns is wrong!**
 
 ### XXXCandles: Timestamp error at: XXX. Import blocked"
 The csv file XXXCandles has no proper timestamps. Ensure that the candle interval (`INTERVAL`) in `.env` is set
