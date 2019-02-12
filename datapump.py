@@ -12,7 +12,7 @@ import platform
 
 PATH = "./input-data"
 EXTENSION = ".csv"
-
+INTERVAL = int(os.environ["INTERVAL"])
 
 class DataPump:
     """Contains all methods for uploading data to a PostgreSQL database."""
@@ -117,8 +117,8 @@ class DataPump:
                 row = [float(x) for x in row]
                 if (
                     prev_nr != -1
-                    and prev_nr + 60000 != row[0]
-                    and prev_nr - 60000 != row[0]
+                    and prev_nr + INTERVAL != row[0]
+                    and prev_nr - INTERVAL != row[0]
                 ):
                     self.__logger.critical(
                         f"{file}: Timestamp error at: {row[0]}. Import blocked"
@@ -206,7 +206,6 @@ class DataPump:
                 sleep(5)
 
         return conn
-
 
 def add_coloring_to_emit_windows(fn):
     """
@@ -315,7 +314,7 @@ def add_coloring_to_emit_ansi(fn):
             color = "\x1b[35m"  # pink
         else:
             color = "\x1b[0m"  # normal
-        args[1].msg = color + args[1].msg + "\x1b[0m"  # normal
+        args[1].msg = color + str(args[1].msg) + "\x1b[0m"  # normal
         # print "after"
         return fn(*args)
 
@@ -324,12 +323,10 @@ def add_coloring_to_emit_ansi(fn):
 
 if platform.system() == "Windows":
     # Windows does not support ANSI escapes and we are using API calls to set the console color
-    logging.StreamHandler.emit = add_coloring_to_emit_windows(
-        logging.StreamHandler.emit
-    )
+    logging.StreamHandler.emit = add_coloring_to_emit_windows(logging.StreamHandler.emit)  # type: ignore
 else:
     # all non-Windows platforms are supporting ANSI escapes so we use them
-    logging.StreamHandler.emit = add_coloring_to_emit_ansi(logging.StreamHandler.emit)
+    logging.StreamHandler.emit = add_coloring_to_emit_ansi(logging.StreamHandler.emit)  # type: ignore
 
 if __name__ == "__main__":
     DataPump()

@@ -1,0 +1,2 @@
+# Prevent docker from copying all data to the container (use volume instead)
+/input-data/

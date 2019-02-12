@@ -1,0 +1,19 @@
+version: '3.4'
+
+services:
+  datapump:
+   build:
+     context: ./
+     dockerfile: Dockerfile
+   entrypoint: python
+   command: -u datapump.py
+   networks:
+    - runner_default
+   env_file:
+     - .env
+   volumes:
+     - ./input-data:/app/input-data # Path-based volume
+
+networks:
+  runner_default:
+    external: true

@@ -8,6 +8,7 @@ black = "==18.9b0"
 pydocstyle = "*"
 docformatter = "*"
 "psycopg2" = "*"
+mypy-mypyc = "*"
 
 [dev-packages]
 
@@ -17,3 +18,4 @@ python_version = "3.6"
 [scripts]
 checkdoc = "pydocstyle --match '(?!test_|__init__).*\\.py' --add-ignore=D100 --ignore-decorators 'copy_ancestor_docstring'"
 fixdoc = "docformatter . -i -r --wrap-summaries 120"
+checktype = "mypy . --ignore-missing-imports"

@@ -3,3 +3,9 @@
 
 # Large csv files should not be in repo (messes git up)
 *.csv
+
+# Environment secrets
+.env
+
+# MyPy
+.mypy_cache/

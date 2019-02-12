@@ -13,3 +13,4 @@ codestyle:
     script:
         - pipenv run black --check
         - pipenv run checkdoc
+        - pipenv run checktype
