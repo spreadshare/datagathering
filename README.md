@@ -13,6 +13,8 @@ Contains all code for gathering data from exchanges such as Binance or Bitfinex.
     ```text
     13f0646a4f36 || postgres || "docker-entrypoint.s…" || 23 hours ago || Up About an hour || 0.0.0.0:5432->5432/tcp || runner_db_1
     ```
+    
+    If the database container is **not** running, run `docker-compose up --build` in the `Runner` project.
 
 1. Copy `.env.example` to `.env` and adjust the parameters (DATABASE_URL and INTERVAL).
     ```bash
