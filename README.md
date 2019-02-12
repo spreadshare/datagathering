@@ -26,6 +26,9 @@ Contains all code for gathering data from exchanges such as Binance or Bitfinex.
     DATABASE_URL=postgresql://postgres:password@db/spreadshare
     INTERVAL=300000
     ```
+    
+    The `DATABASE_URL` parameter is the same url as in `runner/.env`. The `INTERVAL` parameter signifies the timespan of
+    a candle.
 
 1. Copy `CSV`files data to `input-data`. This may require `sudo` as docker may claim ownership of the folder.
 
@@ -34,6 +37,11 @@ Contains all code for gathering data from exchanges such as Binance or Bitfinex.
     ```
 
     Data may be retrieved at: https://stack.raoulschipper.com/s/SJbO9HKFVRoWJ3J
+
+1. Run the Datapump using:
+    ```
+    docker-compose up --build
+    ```
 
 ## Problem and error resolution
 #### Docker can't find the network `runner_default`
