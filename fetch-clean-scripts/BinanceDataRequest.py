@@ -6,14 +6,60 @@ from time import sleep
 conn = http.client.HTTPSConnection("api.binance.com")
 sys.setrecursionlimit(10000)
 
-end_time = 1548158400000
-pairs = ["ADABTC", "ADAETH", "ADAUSDT", "AEBTC", "AEETH", "BNBBTC", "BNBETH", "BNBUSDT", "CMTBTC", "CMTETH", "DGDBTC",
-         "DGDETH", "ETCETH", "HOTBTC", "HOTETH", "ICXBTC", "ICXETH", "ICXUSDT", "IOSTBTC", "IOSTETH", "LSKBTC",
-         "LSKETH", "LTCETH", "NEOBTC", "NEOETH", "NPXSBTC", "NPXSETH", "ONTBTC", "ONTETH", "ONTUSDT", "TRXBTC",
-         "TRXETH", "VETBTC", "VETETH", "VETUSDT", "XEMBTC", "XEMETH", "XLMBTC", "XLMETH", "XLMUSDT", "XMRETH", "XRPETH",
-         "ZECETH", "ZRXBTC", "ZRXETH"]
+end_time = 1_548_158_400_000
+pairs = [
+    "ADABTC",
+    "ADAETH",
+    "ADAUSDT",
+    "AEBTC",
+    "AEETH",
+    "BNBBTC",
+    "BNBETH",
+    "BNBUSDT",
+    "CMTBTC",
+    "CMTETH",
+    "DGDBTC",
+    "DGDETH",
+    "ETCETH",
+    "HOTBTC",
+    "HOTETH",
+    "ICXBTC",
+    "ICXETH",
+    "ICXUSDT",
+    "IOSTBTC",
+    "IOSTETH",
+    "LSKBTC",
+    "LSKETH",
+    "LTCETH",
+    "NEOBTC",
+    "NEOETH",
+    "NPXSBTC",
+    "NPXSETH",
+    "ONTBTC",
+    "ONTETH",
+    "ONTUSDT",
+    "TRXBTC",
+    "TRXETH",
+    "VETBTC",
+    "VETETH",
+    "VETUSDT",
+    "XEMBTC",
+    "XEMETH",
+    "XLMBTC",
+    "XLMETH",
+    "XLMUSDT",
+    "XMRETH",
+    "XRPETH",
+    "ZECETH",
+    "ZRXBTC",
+    "ZRXETH",
+]
 
-headers = {'cache-control': "no-cache", 'postman-token': "a82c86e7-5a5e-f260-e77e-e93dd9a02964", 'user-agent': "random"}
+headers = {
+    "cache-control": "no-cache",
+    "postman-token": "a82c86e7-5a5e-f260-e77e-e93dd9a02964",
+    "user-agent": "random",
+}
 
 # Add delay between requests to prevent being kicked out
 delay = 0.1
@@ -26,7 +72,7 @@ def get_csv(pair: str):
     :param pair: Trading pair concerned in the csv
     :return: CSV Stream
     """
-    return open(f"data/{pair}_Binance5MCandles.csv", 'a', newline='')
+    return open(f"data/{pair}_Binance5MCandles.csv", "a", newline="")
 
 
 def get_data(pair: str, time: int) -> None:
@@ -36,8 +82,15 @@ def get_data(pair: str, time: int) -> None:
     :param pair: Pair to fetch data for
     :param time: End time use in the request
     """
-    conn.request("GET", "/api/v1/klines?symbol=" + pair + "&interval=5m&endTime=" + str(time) + "&limit=500",
-                 headers=headers)
+    conn.request(
+        "GET",
+        "/api/v1/klines?symbol="
+        + pair
+        + "&interval=5m&endTime="
+        + str(time)
+        + "&limit=500",
+        headers=headers,
+    )
     res = conn.getresponse()
     data = res.read().decode("utf-8")
     list_data = eval(data)

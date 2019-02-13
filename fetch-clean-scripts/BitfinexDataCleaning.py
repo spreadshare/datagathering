@@ -2,9 +2,32 @@ import pandas as pd
 import logging
 
 base = 5 * 60000
-pairs = ["ETCBTC", "ETCUSD", "ETHBTC", "ETHUSD", "IOTBTC", "IOTETH", "IOTUSD", "LTCBTC", "LTCUSD", "NEOUSD",
-         "OMGBTC", "OMGETH", "OMGUSD", "QTMBTC", "QTMETH", "QTMUSD", "TRXUSD", "XMRBTC", "XMRUSD", "XRPBTC",
-         "XRPUSD", "ZECBTC", "ZECUSD", "ZRXUSD"]
+pairs = [
+    "ETCBTC",
+    "ETCUSD",
+    "ETHBTC",
+    "ETHUSD",
+    "IOTBTC",
+    "IOTETH",
+    "IOTUSD",
+    "LTCBTC",
+    "LTCUSD",
+    "NEOUSD",
+    "OMGBTC",
+    "OMGETH",
+    "OMGUSD",
+    "QTMBTC",
+    "QTMETH",
+    "QTMUSD",
+    "TRXUSD",
+    "XMRBTC",
+    "XMRUSD",
+    "XRPBTC",
+    "XRPUSD",
+    "ZECBTC",
+    "ZECUSD",
+    "ZRXUSD",
+]
 
 logger = logging.getLogger("Cleaner")
 
@@ -56,7 +79,9 @@ def insert_missing_timestamps(df: pd.DataFrame) -> pd.DataFrame:
 
         # Check if timestamp difference is multiple of base
         if timestamp_diff % base != 0:
-            raise ValueError(f"Difference between {timestamp_next} and {timestamp_current} is not a multiple of {base}")
+            raise ValueError(
+                f"Difference between {timestamp_next} and {timestamp_current} is not a multiple of {base}"
+            )
 
         # Calculate the amount of new timestamps to create
         # Example: 600000 --> create 1 new candle
@@ -82,11 +107,21 @@ def insert_missing_timestamps(df: pd.DataFrame) -> pd.DataFrame:
             logger.debug(f"Timestamp to add : {ts_add}")
 
             # Add new timestamp and increment id
-            new_rows[new_id] = [ts_add, df.loc[i]['Open'], df.loc[i]['Close'], df.loc[i]['High'], df.loc[i]['Low'], 0]
+            new_rows[new_id] = [
+                ts_add,
+                df.loc[i]["Open"],
+                df.loc[i]["Close"],
+                df.loc[i]["High"],
+                df.loc[i]["Low"],
+                0,
+            ]
             new_id += 1
 
-    new_data = pd.DataFrame.from_dict(new_rows, orient='index',
-                                      columns=['Timestamp', 'Open', 'Close', 'High', 'Low', 'Volume'])
+    new_data = pd.DataFrame.from_dict(
+        new_rows,
+        orient="index",
+        columns=["Timestamp", "Open", "Close", "High", "Low", "Volume"],
+    )
 
     logger.debug(f"Timestamps added: {len(new_data)}")
 
@@ -102,32 +137,41 @@ def clean_data(pair):
     try:
         csv = get_csv(pair)
     except FileNotFoundError:
-        logger.error(f"Could not find a csv for trading pair {pair}. Skipping this pair")
+        logger.error(
+            f"Could not find a csv for trading pair {pair}. Skipping this pair"
+        )
         return
 
     # Convert CSV to DataFrame
-    dirty = pd.read_csv(csv, names=['Timestamp', 'Open', 'High', 'Low', 'Close', 'Volume'])
+    dirty = pd.read_csv(
+        csv, names=["Timestamp", "Open", "High", "Low", "Close", "Volume"]
+    )
 
     # Set all timestamps to nearest divisible minute
-    dirty['Timestamp'] = dirty['Timestamp'].apply(round_timestamp)
+    dirty["Timestamp"] = dirty["Timestamp"].apply(round_timestamp)
 
     # Remove duplicates
-    dirty = dirty.drop_duplicates(subset=['Timestamp'])
+    dirty = dirty.drop_duplicates(subset=["Timestamp"])
 
     # Sort timestamps from low to high
-    dirty = dirty.sort_values(by=['Timestamp'], ascending=True)
+    dirty = dirty.sort_values(by=["Timestamp"], ascending=True)
 
     # Insert missing timestamps
     dirty = insert_missing_timestamps(dirty)
 
     # # Resort as new timestamps have been appended
-    dirty = dirty.sort_values(by=['Timestamp'], ascending=True)
+    dirty = dirty.sort_values(by=["Timestamp"], ascending=True)
 
     # Sort the columns into ordering the system expects
-    dirty = dirty[['Timestamp', 'Open', 'Close', 'High', 'Low', 'Volume']]
+    dirty = dirty[["Timestamp", "Open", "Close", "High", "Low", "Volume"]]
 
     # Output to csv
-    dirty.to_csv(f"data/cleaned/{pair}CleanedBitfinex5MCandles.csv", sep=',', encoding='utf-8', index=False)
+    dirty.to_csv(
+        f"data/cleaned/{pair}CleanedBitfinex5MCandles.csv",
+        sep=",",
+        encoding="utf-8",
+        index=False,
+    )
 
 
 def main() -> None:

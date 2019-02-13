@@ -7,11 +7,38 @@ from time import sleep
 conn = http.client.HTTPSConnection("api.bitfinex.com")
 sys.setrecursionlimit(10000)
 
-end_time = 1548158400000
-pairs = ["tETCBTC", "tETCUSD", "tETHBTC", "tETHUSD", "tIOTBTC", "tIOTETH", "tIOTUSD", "tLTCBTC", "tLTCUSD", "tNEOUSD",
-         "tOMGBTC", "tOMGETH", "tOMGUSD", "tQTMBTC", "tQTMETH", "tQTMUSD", "tTRXUSD", "tXMRBTC", "tXMRUSD", "tXRPBTC",
-         "tXRPUSD", "tZECBTC", "tZECUSD", "tZRXUSD"]
-headers = {'cache-control': "no-cache", 'postman-token': "a82c86e7-5a5e-f260-e77e-e93dd9a02964", 'user-agent': "random"}
+end_time = 1_548_158_400_000
+pairs = [
+    "tETCBTC",
+    "tETCUSD",
+    "tETHBTC",
+    "tETHUSD",
+    "tIOTBTC",
+    "tIOTETH",
+    "tIOTUSD",
+    "tLTCBTC",
+    "tLTCUSD",
+    "tNEOUSD",
+    "tOMGBTC",
+    "tOMGETH",
+    "tOMGUSD",
+    "tQTMBTC",
+    "tQTMETH",
+    "tQTMUSD",
+    "tTRXUSD",
+    "tXMRBTC",
+    "tXMRUSD",
+    "tXRPBTC",
+    "tXRPUSD",
+    "tZECBTC",
+    "tZECUSD",
+    "tZRXUSD",
+]
+headers = {
+    "cache-control": "no-cache",
+    "postman-token": "a82c86e7-5a5e-f260-e77e-e93dd9a02964",
+    "user-agent": "random",
+}
 delay = 3.5
 base = 5 * 60000
 logger = logging.getLogger("Cleaner")
@@ -25,7 +52,7 @@ def get_csv(pair: str):
     :return: CSV handler
     """
     pairname = pair[1:]
-    return open(f"data/{pairname}_Bitfinex5MCandles.csv", 'a', newline='')
+    return open(f"data/{pairname}_Bitfinex5MCandles.csv", "a", newline="")
 
 
 def get_data(pair: str, time: int) -> None:
@@ -35,7 +62,11 @@ def get_data(pair: str, time: int) -> None:
     :param pair: Pair to fetch data for
     :param time: End time use in the request
     """
-    conn.request("GET", "/v2/candles/trade:5m:" + pair + "/hist?end=" + str(time) + "&limit=1000", headers=headers)
+    conn.request(
+        "GET",
+        "/v2/candles/trade:5m:" + pair + "/hist?end=" + str(time) + "&limit=1000",
+        headers=headers,
+    )
     res = conn.getresponse()
     # Candle format: StartTS, Open, Close, High, Low
     data = res.read().decode("utf-8")
