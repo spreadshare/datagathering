@@ -83,7 +83,7 @@ def insert_missing_timestamps(df: pd.DataFrame) -> pd.DataFrame:
             new_id += 1
 
     new_data = pd.DataFrame.from_dict(new_rows, orient='index',
-                                      columns=['Time', 'Open', 'Close', 'High', 'Low', 'Volume'])
+                                      columns=['Timestamp', 'Open', 'Close', 'High', 'Low', 'Volume'])
 
     logger.debug(f"Timestamps added: {len(new_data)}")
 
@@ -103,25 +103,25 @@ def clean_data(pair):
         return
 
     # Convert CSV to DataFrame
-    dirty = pd.read_csv(csv, names=['Time', 'Open', 'High', 'Low', 'Close', 'Volume'])
+    dirty = pd.read_csv(csv, names=['Timestamp', 'Open', 'High', 'Low', 'Close', 'Volume'])
 
     # Set all timestamps to nearest divisible minute
-    dirty['Time'] = dirty['Time'].apply(round_timestamp)
+    dirty['Timestamp'] = dirty['Timestamp'].apply(round_timestamp)
 
     # Remove duplicates
-    dirty = dirty.drop_duplicates(subset=['Time'])
+    dirty = dirty.drop_duplicates(subset=['Timestamp'])
 
     # Sort timestamps from low to high
-    dirty = dirty.sort_values(by=['Time'], ascending=True)
+    dirty = dirty.sort_values(by=['Timestamp'], ascending=True)
 
     # Insert missing timestamps
     dirty = insert_missing_timestamps(dirty)
 
     # # Resort as new timestamps have been appended
-    dirty = dirty.sort_values(by=['Time'], ascending=True)
+    dirty = dirty.sort_values(by=['Timestamp'], ascending=True)
 
     # Sort the columns into ordering the system expects
-    dirty = dirty[['Time', 'Open', 'Close', 'High', 'Low', 'Volume']]
+    dirty = dirty[['Timestamp', 'Open', 'Close', 'High', 'Low', 'Volume']]
 
     # Output to csv
     dirty.to_csv(f"data/cleaned/{pair}CleanedBitfinex5MCandles.csv", sep=',', encoding='utf-8', index=False)
