@@ -14,6 +14,7 @@ PATH = "./input-data"
 EXTENSION = ".csv"
 INTERVAL = int(os.environ["INTERVAL"])
 
+
 class DataPump:
     """Contains all methods for uploading data to a PostgreSQL database."""
 
@@ -207,6 +208,7 @@ class DataPump:
 
         return conn
 
+
 def add_coloring_to_emit_windows(fn):
     """
     Add coloring to windows terminals.
@@ -323,10 +325,14 @@ def add_coloring_to_emit_ansi(fn):
 
 if platform.system() == "Windows":
     # Windows does not support ANSI escapes and we are using API calls to set the console color
-    logging.StreamHandler.emit = add_coloring_to_emit_windows(logging.StreamHandler.emit)  # type: ignore
+    logging.StreamHandler.emit = add_coloring_to_emit_windows(  # type: ignore
+        logging.StreamHandler.emit
+    )
 else:
     # all non-Windows platforms are supporting ANSI escapes so we use them
-    logging.StreamHandler.emit = add_coloring_to_emit_ansi(logging.StreamHandler.emit)  # type: ignore
+    logging.StreamHandler.emit = add_coloring_to_emit_ansi(  # type: ignore
+        logging.StreamHandler.emit
+    )
 
 if __name__ == "__main__":
     DataPump()

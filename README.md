@@ -30,13 +30,14 @@ Contains all code for gathering data from exchanges such as Binance or Bitfinex.
     The `DATABASE_URL` parameter is the same url as in `runner/.env`. The `INTERVAL` parameter signifies the timespan of
     a candle.
 
-1. Copy `CSV`files data to `input-data`. This may require `sudo` as docker may claim ownership of the folder.
+1. Copy `CSV`files data to `input-data`. This may require `sudo` as docker may claim ownership of the folder. Be aware 
+that the data has a `Timestamp, Open, Close, High, Low, Volume` format.
 
     ```bash
     sudo cp *.csv ./input-data
     ```
 
-    Data may be retrieved at: https://stack.raoulschipper.com/s/SJbO9HKFVRoWJ3J
+    Cleaned 5 minute data may be retrieved at: https://stack.raoulschipper.com/s/AKdwqOjrBqsbCwF
 
 1. Run the Datapump using:
     ```
