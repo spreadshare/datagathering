@@ -25,13 +25,13 @@ Contains all code for gathering data from exchanges such as Binance or Bitfinex.
     INTERVAL=300000
     ```
 
-1. Copy `CSV`files data to `input-data`. This may require `sudo` as docker may claim ownership of the folder.
+1. Copy `CSV`files data to `input-data`. This may require `sudo` as docker may claim ownership of the folder. Be mindfull that the data has a Time, Open, Close, High, Low, Volume format.
 
     ```bash
     sudo cp *.csv ./input-data
     ```
 
-    Data may be retrieved at: https://stack.raoulschipper.com/s/SJbO9HKFVRoWJ3J
+    Cleaned 5 minute data may be retrieved at: https://stack.raoulschipper.com/s/AKdwqOjrBqsbCwF
 
 ## Problem and error resolution
 #### Docker can't find the network `runner_default`
