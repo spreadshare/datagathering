@@ -25,7 +25,8 @@ Contains all code for gathering data from exchanges such as Binance or Bitfinex.
     INTERVAL=300000
     ```
 
-1. Copy `CSV`files data to `input-data`. This may require `sudo` as docker may claim ownership of the folder. Be mindfull that the data has a Time, Open, Close, High, Low, Volume format.
+1. Copy `CSV`files data to `input-data`. This may require `sudo` as docker may claim ownership of the folder. Be aware 
+that the data has a `Timestamp, Open, Close, High, Low, Volume` format.
 
     ```bash
     sudo cp *.csv ./input-data

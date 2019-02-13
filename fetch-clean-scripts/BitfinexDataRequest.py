@@ -18,17 +18,23 @@ logger = logging.getLogger("Cleaner")
 
 
 def get_csv(pair: str):
+    """
+    Open the csv file for a given pair.
+
+    :param pair: Trading pair
+    :return: CSV handler
+    """
     pairname = pair[1:]
     return open(f"data/{pairname}_Bitfinex5MCandles.csv", 'a', newline='')
 
 
 def get_data(pair: str, time: int) -> None:
     """
-  Get the data for specified pair with specified end time
-  :param pair: Pair to fetch data for
-  :param time: End time use in the request
-  """
+    Get the data for specified pair with specified end time.
 
+    :param pair: Pair to fetch data for
+    :param time: End time use in the request
+    """
     conn.request("GET", "/v2/candles/trade:5m:" + pair + "/hist?end=" + str(time) + "&limit=1000", headers=headers)
     res = conn.getresponse()
     # Candle format: StartTS, Open, Close, High, Low
@@ -69,9 +75,7 @@ def get_data(pair: str, time: int) -> None:
 
 
 def main() -> None:
-    """
-  Loop over pairs and fetch data
-  """
+    """Loop over pairs and fetch data."""
     for pair in pairs:
         print(f"Fetching started for {pair}")
         get_data(pair, end_time)

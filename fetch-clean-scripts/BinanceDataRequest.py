@@ -20,16 +20,22 @@ delay = 0.1
 
 
 def get_csv(pair: str):
+    """
+    Get the csv file for a given pair.
+
+    :param pair: Trading pair concerned in the csv
+    :return: CSV Stream
+    """
     return open(f"data/{pair}_Binance5MCandles.csv", 'a', newline='')
 
 
 def get_data(pair: str, time: int) -> None:
     """
-    Get the data for specified pair with specified end time
+    Get the data for specified pair with specified end time.
+
     :param pair: Pair to fetch data for
     :param time: End time use in the request
     """
-
     conn.request("GET", "/api/v1/klines?symbol=" + pair + "&interval=5m&endTime=" + str(time) + "&limit=500",
                  headers=headers)
     res = conn.getresponse()
@@ -64,9 +70,7 @@ def get_data(pair: str, time: int) -> None:
 
 
 def main() -> None:
-    """
-    Loop over pairs and fetch data
-    """
+    """Loop over pairs and fetch data."""
     for pair in pairs:
         print(f"Fetching started for {pair}")
         get_data(pair, end_time)

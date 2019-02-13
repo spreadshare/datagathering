@@ -12,7 +12,8 @@ logger = logging.getLogger("Cleaner")
 
 def get_csv(pair: str):
     """
-    Gets the csv file for a given pair
+    Get the csv file for a given pair.
+
     :param pair: Trading pair concerned in the csv
     :return: CSV Stream
     """
@@ -21,7 +22,8 @@ def get_csv(pair: str):
 
 def round_timestamp(timestamp):
     """
-    Round given timestamp to nearest integer such that i % base == 0
+    Round given timestamp to nearest integer such that i % base == 0.
+
     :param timestamp: Timestamp to round
     :return: Rounded timestamp
     """
@@ -30,7 +32,8 @@ def round_timestamp(timestamp):
 
 def insert_missing_timestamps(df: pd.DataFrame) -> pd.DataFrame:
     """
-    Insert missing timestamps with default of the previous timestamp
+    Insert missing timestamps with default of the previous timestamp.
+
     :param df: DataFrame to adjust
     :return: Adjusted DataFrame
     """
@@ -93,9 +96,9 @@ def insert_missing_timestamps(df: pd.DataFrame) -> pd.DataFrame:
 
 def clean_data(pair):
     """
-    Clean data of given pair
-    :param pair:
-    :return:
+    Clean data of given pair.
+
+    :param pair: Pair for which to clean the data
     """
     try:
         csv = get_csv(pair)
@@ -133,9 +136,7 @@ def clean_data(pair):
 
 
 def main() -> None:
-    """
-    Clean data for given
-    """
+    """Clean data for given pairs."""
     for pair in pairs:
         logger.info("#############################")
         logger.info(f"Starting cleaning on {pair}")
