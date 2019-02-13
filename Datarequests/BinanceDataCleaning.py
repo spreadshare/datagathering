@@ -125,6 +125,9 @@ def clean_data(pair):
     # # Resort as new timestamps have been appended
     dirty = dirty.sort_values(by=['Time'], ascending=True)
 
+    # Sort the columns into ordering the system expects
+    dirty = dirty[['Time', 'Open', 'Close', 'High', 'Low', 'Volume']]
+
     # Output to csv
     dirty.to_csv(f"data/cleaned/{pair}CleanedBinance5MCandles.csv", sep=',', encoding='utf-8', index=False)
 
