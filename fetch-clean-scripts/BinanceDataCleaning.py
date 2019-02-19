@@ -129,10 +129,10 @@ def insert_missing_timestamps(df: pd.DataFrame) -> pd.DataFrame:
             # Add new timestamp and increment id
             new_rows[new_id] = [
                 ts_add,
-                df.loc[i]["Open"],
-                df.loc[i]["Close"],
-                df.loc[i]["High"],
-                df.loc[i]["Low"],
+                df.iloc[i, 2],
+                df.iloc[i, 2],
+                df.iloc[i, 2],
+                df.iloc[i, 2],
                 0,
             ]
             new_id += 1
@@ -205,12 +205,7 @@ def clean_data(pair):
     dirty = dirty[["Timestamp", "Open", "Close", "High", "Low", "Volume"]]
 
     # Output to csv
-    dirty.to_csv(
-        f"data/cleaned/{pair}CleanedBinance5MCandles.csv",
-        sep=",",
-        encoding="utf-8",
-        index=False,
-    )
+    dirty.to_csv(f"data/cleaned/{pair}.csv", sep=",", encoding="utf-8", index=False)
 
 
 def main() -> None:
