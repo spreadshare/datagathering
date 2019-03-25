@@ -13,7 +13,7 @@ mypy-mypyc = "*"
 [dev-packages]
 
 [requires]
-python_version = "3.6"
+python_version = "3.7"
 
 [scripts]
 checkdoc = "pydocstyle --match '(?!test_|__init__).*\\.py' --add-ignore=D100 --ignore-decorators 'copy_ancestor_docstring'"
