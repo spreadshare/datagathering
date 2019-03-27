@@ -97,13 +97,14 @@ class DataPump:
             # Skip header
             if has_header:
                 h = next(reader)
-                self.__logger.warning(
-                    f"{file}: Expected header: \tTimestamp, Open, Close, High, Low, Volume"
-                )
-                self.__logger.warning(f"{file}: Given header:\t\t{','.join(h)}")
+                if ",".join(h) != "Timestamp,Open,Close,High,Low,Volume":
+                    self.__logger.warning(
+                        f"{file}: Expected header: \tTimestamp,Open,Close,High,Low,Volume"
+                    )
+                    self.__logger.warning(f"{file}: Given header:\t\t{','.join(h)}")
             else:
                 self.__logger.warning(
-                    f"{file}: Expected header: \tTimestamp, Open, Close, High, Low, Volume"
+                    f"{file}: Expected header: \tTimestamp,Open,Close,High,Low,Volume"
                 )
                 self.__logger.warning(f"{file}: No header given!")
 
