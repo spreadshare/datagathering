@@ -185,7 +185,7 @@ def insert_missing_timestamps(df: pd.DataFrame) -> pd.DataFrame:
     new_data = pd.DataFrame.from_dict(
         new_rows,
         orient="index",
-        columns=["Timestamp", "Open", "Close", "High", "Low", "Volume"],
+        columns=["OpenTimestamp", "Open", "Close", "High", "Low", "Volume"],
     )
 
     logger.debug(f"Timestamps added: {len(new_data)}")
@@ -211,7 +211,7 @@ def clean_data(pair):
     dirty = pd.read_csv(
         csv,
         names=[
-            "Timestamp",
+            "OpenTimestamp",
             "Open",
             "High",
             "Low",
@@ -232,22 +232,22 @@ def clean_data(pair):
     )
 
     # Set all timestamps to nearest divisible minute
-    dirty["Timestamp"] = dirty["Timestamp"].apply(round_timestamp)
+    dirty["OpenTimestamp"] = dirty["OpenTimestamp"].apply(round_timestamp)
 
     # Remove duplicates
-    dirty = dirty.drop_duplicates(subset=["Timestamp"])
+    dirty = dirty.drop_duplicates(subset=["OpenTimestamp"])
 
     # Sort timestamps from low to high
-    dirty = dirty.sort_values(by=["Timestamp"], ascending=True)
+    dirty = dirty.sort_values(by=["OpenTimestamp"], ascending=True)
 
     # Insert missing timestamps
     dirty = insert_missing_timestamps(dirty)
 
     # # Resort as new timestamps have been appended
-    dirty = dirty.sort_values(by=["Timestamp"], ascending=True)
+    dirty = dirty.sort_values(by=["OpenTimestamp"], ascending=True)
 
     # Sort the columns into ordering the system expects
-    dirty = dirty[["Timestamp", "Open", "Close", "High", "Low", "Volume"]]
+    dirty = dirty[["OpenTimestamp", "Open", "Close", "High", "Low", "Volume"]]
 
     # Output to csv
     dirty.to_csv(f"data/cleaned/{pair}.csv", sep=",", encoding="utf-8", index=False)
