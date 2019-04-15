@@ -1,20 +1,16 @@
 import http.client
 import csv
 import sys
+from pathlib import Path
 from time import sleep
 
 conn = http.client.HTTPSConnection("api.binance.com")
 sys.setrecursionlimit(10000)
 
-
-end_time = 1_553_506_200_000
+end_time = 1_554_992_400_000
 pairs = ["TRXETH"]
 
-headers = {
-    "cache-control": "no-cache",
-    "postman-token": "a82c86e7-5a5e-f260-e77e-e93dd9a02964",
-    "user-agent": "random",
-}
+headers = {"cache-control": "no-cache", "user-agent": "random"}
 
 # Add delay between requests to prevent being kicked out
 delay = 0.1
@@ -27,7 +23,11 @@ def get_csv(pair: str):
     :param pair: Trading pair concerned in the csv
     :return: CSV Stream
     """
-    return open(f"data/{pair}_Binance5MCandles.csv", "a", newline="")
+    # Get correct path regardless of working directory
+    path = Path(Path(__file__).resolve().parent).joinpath("data")
+    path.mkdir(exist_ok=True)
+
+    return open(path.joinpath(f"{pair}_Binance5MCandles.csv"), "a", newline="")
 
 
 def get_data(pair: str, time: int) -> None:
@@ -49,6 +49,10 @@ def get_data(pair: str, time: int) -> None:
     res = conn.getresponse()
     data = res.read().decode("utf-8")
     list_data = eval(data)
+
+    if not isinstance(list_data, (list,)):
+        print(f"\u001b[31m ●  Error fetching: {data}\u001b[0m")
+        return
 
     """
     Checks if the fetched list data is larger than 1. Because we are using the end time, the request will always return
@@ -74,7 +78,7 @@ def get_data(pair: str, time: int) -> None:
         get_data(pair, new_time)
     else:
         print(list_data)
-        print(f"Fetching completed for {pair}")
+        print(f"\u001b[32m ● \u001b[0m Fetching completed for {pair}")
 
 
 def main() -> None:

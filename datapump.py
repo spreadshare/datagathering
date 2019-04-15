@@ -13,6 +13,7 @@ import platform
 PATH = "./input-data"
 EXTENSION = ".csv"
 INTERVAL = int(os.environ["INTERVAL"])
+URL = os.environ["DATABASE_URL"]
 
 
 class DataPump:
@@ -174,7 +175,7 @@ class DataPump:
         """
         # Parse parameters and connect
         try:
-            url = urlparse(os.environ["DATABASE_URL"])
+            url = urlparse(URL)
         except KeyError as e:
             self.__logger.error(e)
             self.__logger.error(
