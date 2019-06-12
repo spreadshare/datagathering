@@ -2,12 +2,24 @@ import http.client
 import csv
 import sys
 from pathlib import Path
-from time import sleep
+from time import sleep, time
+
+
+def get_latest_timestamp() -> int:
+    """
+    Get the latest timestamp rounded down.
+
+    :return: Latest correct timestamp
+    """
+    current = int(round(time() * 1000))
+    return current - current % 300_000
+
 
 conn = http.client.HTTPSConnection("api.binance.com")
 sys.setrecursionlimit(10000)
 
-end_time = 1_554_992_400_000
+begin_time = 1_554_992_400_000
+end_time = get_latest_timestamp()
 pairs = ["TRXETH"]
 
 headers = {"cache-control": "no-cache", "user-agent": "random"}
@@ -70,6 +82,11 @@ def get_data(pair: str, time: int) -> None:
 
         # Set new time (the closing time of the oldest candle)
         new_time = list_data[0][6]
+
+        if begin_time and int(new_time) < begin_time:
+            print(list_data[0])
+            print(f"\u001b[32m ● \u001b[0m Fetching completed for {pair}")
+            return
 
         # Don't get kicked out
         sleep(delay)
